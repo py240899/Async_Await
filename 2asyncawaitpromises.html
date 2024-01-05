@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promises.ALL</title>
+</head>
+<body>
+    <script>
+        let posts = [
+            {username:'Post 1',body:'This is 1st Post'},
+            {username:'Post 2',body:'This is 2nd Post'},
+        ];
+
+        const user = {
+            username:"abc",
+            lastactivitytime:new Date().getTime(),
+        };
+
+
+        async function createPost(post){
+            await new Promise(resolve => setTimeout(resolve,1000));
+                    posts.push(post);
+        }
+
+
+        async function getPost(){
+            await new Promise(resolve=>setTimeout(resolve,1000));
+                    console.log(`User:$(user.username),lastActivityTime:$(user.lastactivitytime)`);
+                    for(let i=0;i<posts.length;i++){
+                        console.log(posts[i]);
+                    }
+                
+        }
+
+        async function deletePost(){
+            await new Promise(resolve=>setTimeout(resolve,2000));
+                    if(posts.length !== 0){
+                        return(posts.pop());
+                    }else{
+                        throw new Error("Array is Empty");
+                    }
+        }
+
+        async function updateLastUserActivityTime(){
+            await new Promise(resolve=>setTimeout(resolve,1000));
+                    const lastActivityTime= new Date().getTime();
+                    user.lastactivitytime=lastActivityTime
+        }
+        
+
+        // Promise.all([
+        //     createPost({username:'Post 3',body:'This is 3rd Post'}),
+        //     updateLastUserActivityTime()
+        // ])
+        // .then(()=>{
+        //     getPost().then(()=>{
+        //         deletePost().then(()=>{
+        //             console.log('Remaining Post');
+        //             getPost();
+        //         }).catch((err)=>console.log(err));
+        //     })
+        // })
+        // .catch((err)=>console.log(err));
+
+
+
+        async function main(){
+            try{
+                await Promise.all([
+                    createPost({username:'Post 3',body:'This is 3rd Post'}),
+                    updateLastUserActivityTime()
+                ]);
+                await getPost();
+                const deletedPost = await deletePost();
+                console.log('Deleted Post:',deletedPost)
+
+                console.log('Remaining Post');
+                await getPost();
+            }catch(err){
+                console.log(err);
+            }
+        
+        }
+        main();
+    </script>
+</body>
+</html>
